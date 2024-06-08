@@ -6,7 +6,6 @@ import {
     canDelete,
   verifyToken,
 } from "../middlewares/authJwt.js";
-import { checkDuplicateCategory } from "../middlewares/verifyReapetingFields.js";
 import upload from "../middlewares/upload.js";
 const router = Router();
 
@@ -22,12 +21,12 @@ router.get(
 );
 router.post(
   "/",
-  [verifyToken, canWrite, checkDuplicateCategory, upload.single('coverImage')],
+  [verifyToken, canWrite, upload.single('file')],
   CategoryController.createCategory
 );
 router.put(
   "/:id",
-  [verifyToken, canWrite, checkDuplicateCategory, upload.single('coverImage')],
+  [verifyToken, canWrite, upload.single('file')],
   CategoryController.updateCategory
 );
 router.delete(

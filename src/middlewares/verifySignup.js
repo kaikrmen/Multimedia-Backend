@@ -22,13 +22,11 @@ export const checkExistingRole = (req, res, next) => {
 
   if (!req.body.role) return res.status(400).json({ message: "No role" });
 
-  for (let i = 0; i < req.body.role.length; i++) {
-    if (!role.includes(req.body.role[i])) {
-      return res.status(400).json({
-        message: `Role ${req.body.role[i]} does not exist`,
-      });
-    }
-  }
+  const roleFound = role.find((role) => role === req.body.role); 
 
+  if (!roleFound)
+    return res.status(400).json({ message: "Role not found" });
+
+  
   next();
 };

@@ -23,7 +23,6 @@ class AuthController {
 
       const savedUser = await user.save();
 
-      // Create a token
       const token = jwt.sign(
         {
           id: savedUser._id,

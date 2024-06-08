@@ -2,24 +2,27 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
-import path from "path";
-import { fileURLToPath } from 'url';
-import fs from 'fs';
 
 // Routes
 import routes from "./src/routes/index.js"
 
 
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express();
-
-// Create uploads directory if it doesn't exist
+// Crear carpeta 'uploads' si no existe
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
+
+const app = express();
+
+
 
 // Settings
 app.set("port", process.env.PORT || 4000);
