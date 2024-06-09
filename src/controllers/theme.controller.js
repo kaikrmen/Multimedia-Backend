@@ -9,14 +9,15 @@ class ThemeController {
 
       const nameExists = await Theme.findOne({ name });
 
-      if (nameExists) return res.status(400).json({ message: "Name already exists" });
+      if (nameExists)
+        return res.status(400).json({ message: "Name already exists" });
 
       const theme = new Theme({
         name,
         permissions: {
-          images: permissions.images || false,
-          videos: permissions.videos || false,
-          texts: permissions.texts || false,
+          images: permissions?.images || false,
+          videos: permissions?.videos || false,
+          texts: permissions?.texts || false,
         },
       });
 
@@ -42,7 +43,7 @@ class ThemeController {
 
   async getTheme(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       if (!id) return res.status(400).json({ message: "Missing id" });
 
@@ -59,28 +60,35 @@ class ThemeController {
 
   async updateTheme(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       const { name, permissions } = req.body;
 
-      if (!id) return res.status(400).json({ message: "Missing id" });
-
-      const theme = await Theme.findById(id);
-
-      if (!theme) return res.status(404).json({ message: "Theme not found" });
+      if (!id || !name)
+        return res.status(400).json({ message: "Missing fields" });
 
       const nameExists = await Theme.findOne({ name });
 
       if (nameExists && nameExists._id.toString() !== id)
         return res.status(400).json({ message: "Name already exists" });
 
-      theme.name = name || theme.name;
-      theme.permissions = {
-        images: permissions.images || theme.permissions.images,
-        videos: permissions.videos || theme.permissions.videos,
-        texts: permissions.texts || theme.permissions.texts,
-      };
+      const theme = await Theme.findById(id)
 
-      const updatedTheme = await theme.save();
+      const updatedTheme = await Theme.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            name: name,
+            permissions: {
+              images: permissions?.images || theme.permissions.images,
+              videos: permissions?.videos || theme.permissions.videos,
+              texts: permissions?.texts || theme.permissions.texts,
+            },
+          },
+        }
+      );
+
+      if (!updatedTheme)
+        return res.status(404).json({ message: "Theme not found" });
 
       return res.status(200).json(updatedTheme);
     } catch (error) {
@@ -91,7 +99,7 @@ class ThemeController {
 
   async deleteTheme(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       if (!id) return res.status(400).json({ message: "Missing id" });
 
@@ -99,7 +107,7 @@ class ThemeController {
 
       if (!theme) return res.status(404).json({ message: "Theme not found" });
 
-      await theme.delete();
+      await Theme.findByIdAndDelete(id);
 
       return res.status(200).json({ message: "Theme deleted" });
     } catch (error) {

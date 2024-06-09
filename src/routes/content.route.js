@@ -4,17 +4,19 @@ import {
   canWrite,
   canRead,
   canDelete,
+  mongoId
 } from "../middlewares/authJwt.js";
+import { mongoId } from "../middlewares/mongoId.js";
 
 const router = Router();
 
 router.get("/",  ContentController.getContents);
 
-router.get("/:id", [verifyToken, canRead], ContentController.getContent);
+router.get("/:id", [verifyToken, mongoId, canRead], ContentController.getContent);
 
 router.post("/", [verifyToken, canWrite], ContentController.createContent);
 
-router.put("/:id", [verifyToken, canWrite], ContentController.updateContent);
+router.put("/:id", [verifyToken, mongoId, canWrite], ContentController.updateContent);
 
 router.delete(
   "/:id",

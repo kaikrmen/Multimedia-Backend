@@ -47,7 +47,7 @@ class UserController {
 
   async getUser(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       if (!id) return res.status(400).json({ message: 'Missing id' });
 
@@ -64,7 +64,7 @@ class UserController {
 
   async updateUser(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       const { username, email, roles } = req.body;
 
       if (!id || !username || !email || !roles)
@@ -94,7 +94,7 @@ class UserController {
 
   async deleteUser(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       if (!id) return res.status(400).json({ message: 'Missing id' });
 

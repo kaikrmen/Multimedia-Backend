@@ -7,6 +7,7 @@ import {
   verifyToken,
 } from "../middlewares/authJwt.js";
 import { checkExistingRole, checkExistingUser, validateEmail } from "../middlewares/verifySignup.js";
+import { mongoId } from "../middlewares/mongoId.js";
 const router = Router();
 
 router.post(
@@ -21,12 +22,12 @@ router.get(
 );
 router.get(
   "/:id",
-  [verifyToken, canRead],
+  [verifyToken, canRead, mongoId],
   UserController.getUser
 );
 router.put(
   "/:id",
-  [verifyToken, canWrite, checkExistingUser, validateEmail],
+  [verifyToken, canWrite, checkExistingUser, validateEmail, mongoId],
   UserController.updateUser
 );
 

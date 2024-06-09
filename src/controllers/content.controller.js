@@ -63,7 +63,7 @@ class ContentController {
 
   async getContent(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       const content = await Content.findById(id).populate("theme user");
       if (!content)
         return res.status(404).json({ message: "Content not found" });
@@ -76,7 +76,7 @@ class ContentController {
 
   async updateContent(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       const { title, type, text, theme } = req.body;
 
       let url;
@@ -117,7 +117,7 @@ class ContentController {
 
   async deleteContent(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       const content = await Content.findById(id);
       if (!content)

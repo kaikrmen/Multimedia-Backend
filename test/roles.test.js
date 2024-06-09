@@ -62,6 +62,7 @@ describe("Access Control Tests", () => {
   });
 
   afterAll(async () => {
+    await mongoose.connection.dropDatabase();
     await mongoose.disconnect();
     await mongoServer.stop();
   });

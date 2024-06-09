@@ -1,7 +1,7 @@
 import Category from "../models/Category.js";
 import path from "path";
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { fileURLToPath } from "url";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +17,8 @@ class CategoryController {
 
       const nameExists = await Category.findOne({ name });
 
-      if (nameExists) return res.status(400).json({ message: "Category already exists" });
+      if (nameExists)
+        return res.status(400).json({ message: "Category already exists" });
 
       const category = new Category({
         name,
@@ -48,9 +49,9 @@ class CategoryController {
 
   async getCategory(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       if (!id) return res.status(400).json({ message: "Missing id" });
-      const category = await Category.findById(id);
+      const category = await Category.findOne({ _id: id });
       if (!category)
         return res.status(404).json({ message: "Category not found" });
       return res.status(200).json(category);
@@ -62,7 +63,7 @@ class CategoryController {
 
   async updateCategory(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
       const { name, allowsImages, allowsVideos, allowsTexts } = req.body;
       const coverImageUrl = req.file
         ? `/uploads/${req.file.filename}`
@@ -71,7 +72,7 @@ class CategoryController {
       if (!id || !name || !coverImageUrl)
         return res.status(400).json({ message: "Missing fields" });
 
-      const foundCategory = await Category.findById(id);
+      const foundCategory = await Category.findOne({ _id: id });
       if (!foundCategory)
         return res.status(404).json({ message: "Category not found" });
 
@@ -80,14 +81,19 @@ class CategoryController {
         return res.status(400).json({ message: "Category already exists" });
 
       if (req.file && foundCategory.coverImageUrl) {
-        const oldFilePath = path.join(__dirname, "..", foundCategory.coverImageUrl);
+        const oldFilePath = path.join(
+          __dirname,
+          "..",
+          foundCategory.coverImageUrl
+        );
         fs.unlink(oldFilePath, (err) => {
-          if (err && err.code !== 'ENOENT') console.error("Failed to delete old file: ", err);
+          if (err && err.code !== "ENOENT")
+            console.error("Failed to delete old file: ", err);
         });
       }
 
-      const updatedCategory = await Category.findByIdAndUpdate(
-        id,
+      const updatedCategory = await Category.findOneAndUpdate(
+        { _id: id },
         {
           name,
           allowsImages,
@@ -110,7 +116,7 @@ class CategoryController {
 
   async deleteCategory(req, res) {
     try {
-      const { id } = req.params;
+      const id = req.params.id;
 
       const category = await Category.findById(id);
       if (!category)
@@ -118,7 +124,7 @@ class CategoryController {
 
       const imagePath = path.join(__dirname, "..", category.coverImageUrl);
       fs.unlink(imagePath, (err) => {
-        if (err && err.code !== 'ENOENT') {
+        if (err && err.code !== "ENOENT") {
           console.error("Failed to delete image: ", err);
         }
       });
