@@ -2,6 +2,7 @@ import Content from "../models/Content.js";
 import Theme from "../models/Theme.js";
 import fs from "fs";
 import path from "path";
+import mongoose from "mongoose";
 
 class ContentController {
   async createContent(req, res) {
@@ -9,26 +10,29 @@ class ContentController {
       const { title, type, text, theme, url } = req.body;
       const userId = req.userId;
 
+      if (!title || !type || !theme) {
+        return res.status(400).json({ message: "Missing fields" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(theme)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+
       const themeData = await Theme.findById(theme);
-      if (!themeData)
-        return res.status(404).json({ message: "Theme not found" });
+      if (!themeData) return res.status(404).json({ message: "Theme not found" });
 
       if (
         (type === "image" && !themeData.permissions.images) ||
         (type === "video" && !themeData.permissions.videos) ||
         (type === "text" && !themeData.permissions.texts)
       ) {
-        return res
-          .status(400)
-          .json({ message: `Theme does not allow ${type} content` });
+        return res.status(400).json({ message: `Theme does not allow ${type} content` });
       }
 
       let image;
       if (type === "image") {
         if (!req.file) {
-          return res
-            .status(400)
-            .json({ message: `File is required for ${type} content` });
+          return res.status(400).json({ message: `File is required for ${type} content` });
         }
         image = `/uploads/${req.file.filename}`;
       }
@@ -64,9 +68,13 @@ class ContentController {
   async getContent(req, res) {
     try {
       const id = req.params.id;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+
       const content = await Content.findById(id).populate("theme user");
-      if (!content)
-        return res.status(404).json({ message: "Content not found" });
+      if (!content) return res.status(404).json({ message: "Content not found" });
       return res.status(200).json(content);
     } catch (error) {
       res.status(500).json(error);
@@ -78,6 +86,17 @@ class ContentController {
     try {
       const id = req.params.id;
       const { title, type, text, theme } = req.body;
+
+      if (!title || !type || !theme) {
+        return res.status(400).json({ message: "Missing fields" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(theme)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+
+      const themeData = await Theme.findById(theme);
+      if (!themeData) return res.status(404).json({ message: "Theme not found" });
 
       let url;
       if (type === "image" || type === "video") {
@@ -105,8 +124,7 @@ class ContentController {
         { new: true }
       );
 
-      if (!updatedContent)
-        return res.status(404).json({ message: "Content not found" });
+      if (!updatedContent) return res.status(404).json({ message: "Content not found" });
 
       return res.status(200).json(updatedContent);
     } catch (error) {
@@ -119,9 +137,12 @@ class ContentController {
     try {
       const id = req.params.id;
 
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+
       const content = await Content.findById(id);
-      if (!content)
-        return res.status(404).json({ message: "Content not found" });
+      if (!content) return res.status(404).json({ message: "Content not found" });
 
       if (content.url) {
         const filePath = path.join(__dirname, "..", content.url);
