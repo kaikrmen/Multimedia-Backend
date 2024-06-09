@@ -2,46 +2,47 @@ import Role from "../models/Role.js";
 import User from "../models/User.js";
 import { ADMIN_EMAIL, ADMIN_USERNAME, ADMIN_PASSWORD } from "../../config.js";
 
-export const createrole = async () => {
+export const createRoles = async () => {
   try {
-    // Count Documents
     const count = await Role.estimatedDocumentCount();
-
-    // check for existing role
     if (count > 0) return;
 
-    // Create default role
     const values = await Promise.all([
       new Role({ name: "reader" }).save(),
       new Role({ name: "creator" }).save(),
       new Role({ name: "admin" }).save(),
     ]);
 
-    console.log(values);
+    console.log("Roles created:", values);
   } catch (error) {
-    console.error(error);
+    console.error("Error creating roles:", error);
   }
 };
 
 export const createAdmin = async () => {
-  // check for an existing admin user
-  const userFound = await User.findOne({ email: ADMIN_EMAIL });
-  console.log(userFound);
-  if (userFound) return;
+  try {
+    const userFound = await User.findOne({ email: ADMIN_EMAIL });
+    if (userFound) return console.log(userFound)
 
-  // get role _id
-  const role = await Role.find({ name: { $in: ["admin"] } });
+    const adminRole = await Role.findOne({ name: "admin" });
+    if (!adminRole) {
+      console.error("Admin role not found");
+      return;
+    }
 
-  // create a new admin user
-  const newUser = await User.create({
-    username: ADMIN_USERNAME,
-    email: ADMIN_EMAIL,
-    password: ADMIN_PASSWORD,
-    role: role.map((role) => role._id),
-  });
+    const newUser = new User({
+      username: ADMIN_USERNAME,
+      email: ADMIN_EMAIL,
+      password: await User.encryptPassword(ADMIN_PASSWORD),
+      roles: [adminRole._id],
+    });
 
-  console.log(`new user created: ${newUser.email}`);
+    const savedUser = await newUser.save();
+    console.log(`New admin user created: ${savedUser.email}`);
+  } catch (error) {
+    console.error("Error creating admin user:", error);
+  }
 };
 
-createrole();
+createRoles();
 createAdmin();

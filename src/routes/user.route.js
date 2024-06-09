@@ -6,12 +6,12 @@ import {
   canRead,
   verifyToken,
 } from "../middlewares/authJwt.js";
-import { checkExistingUser } from "../middlewares/verifySignup.js";
+import { checkExistingRole, checkExistingUser, validateEmail } from "../middlewares/verifySignup.js";
 const router = Router();
 
 router.post(
   "/",
-  [verifyToken, canWrite, checkExistingUser],
+  [verifyToken, canWrite, checkExistingUser, checkExistingRole, validateEmail],
   UserController.createUser
 );
 router.get(
@@ -26,7 +26,7 @@ router.get(
 );
 router.put(
   "/:id",
-  [verifyToken, canWrite, checkExistingUser],
+  [verifyToken, canWrite, checkExistingUser, validateEmail],
   UserController.updateUser
 );
 

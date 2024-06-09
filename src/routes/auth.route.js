@@ -3,24 +3,17 @@ import AuthController from "../controllers/auth.controller.js";
 import {
   checkExistingUser,
   checkExistingRole,
+  validateEmail
 } from "../middlewares/verifySignup.js";
 
 const router = Router();
 
-router.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Headers",
-    "x-access-token, Origin, Content-Type, Accept"
-  );
-  next();
-});
-
 router.post(
   "/register",
-  [checkExistingUser, checkExistingRole],
+  [checkExistingUser, checkExistingRole, validateEmail],
   AuthController.register
 );
 
-router.post("/login", AuthController.login);
+router.post("/login", [validateEmail], AuthController.login);
 
 export default router;
