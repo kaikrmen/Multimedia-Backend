@@ -1,4 +1,5 @@
 import Theme from "../models/Theme.js";
+import Content from "../models/Content.js";
 
 class ThemeController {
   async createTheme(req, res) {
@@ -71,7 +72,7 @@ class ThemeController {
       if (nameExists && nameExists._id.toString() !== id)
         return res.status(400).json({ message: "Name already exists" });
 
-      const theme = await Theme.findById(id)
+      const theme = await Theme.findById(id);
 
       const updatedTheme = await Theme.findOneAndUpdate(
         { _id: id },
@@ -102,6 +103,14 @@ class ThemeController {
       const id = req.params.id;
 
       if (!id) return res.status(400).json({ message: "Missing id" });
+
+      const contentUsingCategory = await Content.findOne({ theme: id });
+      if (contentUsingCategory)
+        return res
+          .status(400)
+          .json({
+            message: "Category is in use by content and cannot be deleted",
+          });
 
       const theme = await Theme.findById(id);
 

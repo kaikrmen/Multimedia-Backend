@@ -177,6 +177,8 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Theme deleted successfully
+ *       400:
+ *       description: Category is in use by content and cannot be deleted
  *       404:
  *         description: Theme not found
  *       500:

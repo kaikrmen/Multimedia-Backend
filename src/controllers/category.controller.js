@@ -1,4 +1,5 @@
 import Category from "../models/Category.js";
+import Content from "../models/Content.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -119,6 +120,10 @@ class CategoryController {
       const category = await Category.findById(id);
       if (!category)
         return res.status(404).json({ message: "Category not found" });
+
+      const contentUsingCategory = await Content.findOne({ category: id });
+      if (contentUsingCategory)
+        return res.status(400).json({ message: "Category is in use by content and cannot be deleted" });
 
       const imagePath = path.join(__dirname, "..", category.coverImageUrl);
       fs.unlink(imagePath, (err) => {
