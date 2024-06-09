@@ -5,8 +5,11 @@ import helmet from "helmet";
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from "./swaggerConfig.js"
+
 // Routes
-import routes from "./src/routes/index.js"
+import routes from "./src/routes/index.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,5 +36,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use("/api/v1", routes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 export default app;

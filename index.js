@@ -5,7 +5,7 @@ import "./src/libs/setup.js";
 
 const start = async () => {
   app.listen(PORT, () => {
-    console.log(`Server on port,  app.get("port")`);
+    console.log(`Server on port ` + app.get('port'));
   });
 };
 
