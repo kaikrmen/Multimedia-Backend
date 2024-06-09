@@ -8,6 +8,7 @@ import {
 } from "../middlewares/authJwt.js";
 import { mongoId } from "../middlewares/mongoId.js";
 import upload from "../middlewares/upload.js";
+
 const router = Router();
 
 /**
@@ -23,8 +24,6 @@ const router = Router();
  *   get:
  *     summary: Retrieve a list of categories
  *     tags: [Category]
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of categories
@@ -138,7 +137,6 @@ const router = Router();
  *             type: object
  *             required:
  *               - name
- *               - file
  *             properties:
  *               name:
  *                 type: string
@@ -156,6 +154,9 @@ const router = Router();
  *                 type: string
  *                 format: binary
  *                 description: The category cover image
+ *               existingImageUrl:
+ *                 type: string
+ *                 description: The existing cover image URL
  *     responses:
  *       200:
  *         description: The updated category
@@ -195,7 +196,7 @@ const router = Router();
  *         description: Internal server error
  */
 
-router.get("/", [verifyToken, canRead], CategoryController.getCategories);
+router.get("/", CategoryController.getCategories);
 router.get(
   "/:id",
   [verifyToken, canRead, mongoId],

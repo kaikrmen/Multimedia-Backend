@@ -11,6 +11,7 @@ import mongoose from "mongoose";
  *         - type
  *         - theme
  *         - user
+ *         - categoryId
  *       properties:
  *         _id:
  *           type: string
@@ -37,6 +38,9 @@ import mongoose from "mongoose";
  *         user:
  *           type: string
  *           description: The ID of the user who created the content
+ *         categoryId:
+ *           type: string
+ *           description: The ID of the category associated with the content
  *       example:
  *         _id: 60c72b2f4f1a2c001c8d4e2b
  *         title: My First Content
@@ -44,6 +48,7 @@ import mongoose from "mongoose";
  *         text: This is the content of the first post
  *         theme: 60c72b2f4f1a2c001c8d4e2a
  *         user: 60c72b2f4f1a2c001c8d4e29
+ *         category: 60c72b2f4f1a2c001c8d4e2c
  */
 
 const contentSchema = new mongoose.Schema(
@@ -74,6 +79,11 @@ const contentSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
   },

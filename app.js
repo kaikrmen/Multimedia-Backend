@@ -28,7 +28,7 @@ app.set("json spaces", 4);
 
 // Middlewares
 app.use(cors());
-
+app.use('/api/v1/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());

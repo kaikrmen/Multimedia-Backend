@@ -64,10 +64,8 @@ class CategoryController {
   async updateCategory(req, res) {
     try {
       const id = req.params.id;
-      const { name, allowsImages, allowsVideos, allowsTexts } = req.body;
-      const coverImageUrl = req.file
-        ? `/uploads/${req.file.filename}`
-        : req.body.coverImageUrl;
+      const { name, allowsImages, allowsVideos, allowsTexts, existingImageUrl } = req.body;
+      const coverImageUrl = req.file ? `/uploads/${req.file.filename}` : existingImageUrl;
 
       if (!id || !name || !coverImageUrl)
         return res.status(400).json({ message: "Missing fields" });
@@ -80,7 +78,7 @@ class CategoryController {
       if (nameExists && nameExists._id.toString() !== id)
         return res.status(400).json({ message: "Category already exists" });
 
-      if (req.file && foundCategory.coverImageUrl) {
+      if (req.file && foundCategory.coverImageUrl && foundCategory.coverImageUrl !== existingImageUrl) {
         const oldFilePath = path.join(
           __dirname,
           "..",
@@ -109,7 +107,7 @@ class CategoryController {
 
       return res.status(200).json(updatedCategory);
     } catch (error) {
-      res.status(500).json(error);
+      res.status500.json(error);
       console.error("Update Category Error: ", error);
     }
   }

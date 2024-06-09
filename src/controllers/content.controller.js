@@ -3,23 +3,27 @@ import Theme from "../models/Theme.js";
 import fs from "fs";
 import path from "path";
 import mongoose from "mongoose";
+import Category from "../models/Category.js";
 
 class ContentController {
   async createContent(req, res) {
     try {
-      const { title, type, text, theme, url } = req.body;
+      const { title, type, text, theme, url, category } = req.body;
       const userId = req.userId;
 
-      if (!title || !type || !theme) {
+      if (!title || !type || !theme || !category) {
         return res.status(400).json({ message: "Missing fields" });
       }
 
-      if (!mongoose.Types.ObjectId.isValid(theme)) {
+      if (!mongoose.Types.ObjectId.isValid(theme) || !mongoose.Types.ObjectId.isValid(category)) {
         return res.status(400).json({ message: "Invalid ID format" });
       }
 
       const themeData = await Theme.findById(theme);
       if (!themeData) return res.status(404).json({ message: "Theme not found" });
+
+      const categoryData = await Category.findById(category);
+      if (!categoryData) return res.status(404).json({ message: "Category not found" });
 
       if (
         (type === "image" && !themeData.permissions.images) ||
@@ -45,6 +49,7 @@ class ContentController {
         text: type === "text" ? text : undefined,
         theme,
         user: userId,
+        category,
       });
 
       const savedContent = await content.save();
@@ -57,7 +62,7 @@ class ContentController {
 
   async getContents(req, res) {
     try {
-      const contents = await Content.find().populate("theme user");
+      const contents = await Content.find().populate("theme user category");
       return res.status(200).json(contents);
     } catch (error) {
       res.status(500).json(error);
@@ -73,7 +78,7 @@ class ContentController {
         return res.status(400).json({ message: "Invalid ID format" });
       }
 
-      const content = await Content.findById(id).populate("theme user");
+      const content = await Content.findById(id).populate("theme user category");
       if (!content) return res.status(404).json({ message: "Content not found" });
       return res.status(200).json(content);
     } catch (error) {
@@ -85,18 +90,21 @@ class ContentController {
   async updateContent(req, res) {
     try {
       const id = req.params.id;
-      const { title, type, text, theme } = req.body;
+      const { title, type, text, theme, category } = req.body;
 
-      if (!title || !type || !theme) {
+      if (!title || !type || !theme || !category) {
         return res.status(400).json({ message: "Missing fields" });
       }
 
-      if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(theme)) {
+      if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(theme) || !mongoose.Types.ObjectId.isValid(category)) {
         return res.status(400).json({ message: "Invalid ID format" });
       }
 
       const themeData = await Theme.findById(theme);
       if (!themeData) return res.status(404).json({ message: "Theme not found" });
+
+      const categoryData = await Category.findById(category);
+      if (!categoryData) return res.status(404).json({ message: "Category not found" });
 
       let url;
       if (type === "image" || type === "video") {
@@ -120,6 +128,7 @@ class ContentController {
           url: type !== "text" ? url : undefined,
           text: type === "text" ? text : undefined,
           theme,
+          category,
         },
         { new: true }
       );
@@ -128,7 +137,7 @@ class ContentController {
 
       return res.status(200).json(updatedContent);
     } catch (error) {
-      res.status(500).json(error);
+      res.status (500).json(error);
       console.error("Update Content Error: ", error);
     }
   }

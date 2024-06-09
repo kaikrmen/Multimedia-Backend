@@ -6,9 +6,22 @@ const options = {
     info: {
       title: "Multimedia Backend Express with Swagger",
       version: "1.0.0",
-      description:
-        "Multimedia-App API",
+      description: "Multimedia-App API",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
     servers: [
       {
         url: "http://localhost:5000/api/v1",

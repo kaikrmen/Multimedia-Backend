@@ -28,7 +28,12 @@ class AuthController {
 
       const savedUser = await user.save();
 
-      const token = jwt.sign({ id: savedUser._id }, SECRET, {
+      const token = jwt.sign({ 
+        id: savedUser._id,
+        username: savedUser.username,
+        email: savedUser.email,
+        roles: roleFound.map((role) => role.name),
+      }, SECRET, {
         expiresIn: "24h",
       });
 
@@ -59,9 +64,18 @@ class AuthController {
         return res.status(401).json({ message: "Invalid Password" });
       }
 
-      const token = jwt.sign({ id: userFound._id }, SECRET, {
-        expiresIn: "24h",
-      });
+      const token = jwt.sign(
+        {
+          id: userFound._id,
+          username: userFound.username,
+          email: userFound.email,
+          roles: userFound.roles.map((role) => role.name),
+        },
+        SECRET,
+        {
+          expiresIn: "24h",
+        }
+      );
 
       return res.status(200).json({ token });
     } catch (error) {

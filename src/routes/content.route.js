@@ -20,6 +20,13 @@ const router = Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Category
+ *   description: Category management
+ */
+
+/**
+ * @swagger
  * /contents:
  *   get:
  *     summary: Retrieve a list of contents
@@ -78,13 +85,14 @@ const router = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - title
  *               - type
  *               - theme
+ *               - category
  *             properties:
  *               title:
  *                 type: string
@@ -99,9 +107,16 @@ const router = Router();
  *               theme:
  *                 type: string
  *                 description: The ID of the theme associated with the content
+ *               category:
+ *                 type: string
+ *                 description: The ID of the category associated with the content
  *               url:
  *                 type: string
  *                 description: The URL of the content (required if type is "video")
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The content file (required if type is "image")
  *     responses:
  *       200:
  *         description: The created content
@@ -133,13 +148,14 @@ const router = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
  *               - title
  *               - type
  *               - theme
+ *               - category
  *             properties:
  *               title:
  *                 type: string
@@ -154,9 +170,16 @@ const router = Router();
  *               theme:
  *                 type: string
  *                 description: The ID of the theme associated with the content
+ *               category:
+ *                 type: string
+ *                 description: The ID of the category associated with the content
  *               url:
  *                 type: string
  *                 description: The URL of the content (required if type is "video")
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The content file (required if type is "image")
  *     responses:
  *       200:
  *         description: The updated content
