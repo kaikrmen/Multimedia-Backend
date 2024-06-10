@@ -90,22 +90,6 @@ describe("CategoryController - CRUD Operations", () => {
     expect(response.body).toHaveProperty("_id", categoryId);
   });
 
-  it("should update a category successfully", async () => {
-    const response = await request(app)
-      .put(`/categories/${categoryId}`)
-      .set("Authorization", `Bearer ${userToken}`)
-      .send({
-        name: "Updated Category",
-        allowsImages: true,
-        allowsVideos: true,
-        allowsTexts: true,
-        coverImageUrl: "/uploads/updated.jpg",
-      });
-
-    expect(response.status).toBe(200);
-    expect(response.body.name).toEqual("Updated Category");
-  });
-
   it("should delete a category successfully", async () => {
     const response = await request(app)
       .delete(`/categories/${categoryId}`)

@@ -10,6 +10,7 @@ import { mongoId } from "../src/middlewares/mongoId.js";
 import User from "../src/models/User.js";
 import Role from "../src/models/Role.js";
 import Theme from "../src/models/Theme.js";
+import Category from "../src/models/Category.js";
 import Content from "../src/models/Content.js";
 import bcrypt from "bcryptjs";
 import multer from "multer";
@@ -52,7 +53,7 @@ afterAll(async () => {
 });
 
 describe("ContentController - CRUD Operations", () => {
-  let userToken, themeId, contentId;
+  let userToken, themeId, categoryId, contentId;
 
   beforeEach(async () => {
     const adminRole = await new Role({ name: "admin" }).save();
@@ -83,11 +84,19 @@ describe("ContentController - CRUD Operations", () => {
     const savedTheme = await theme.save();
     themeId = savedTheme._id.toString();
 
+    const category = new Category({
+      name: "Initial Category",
+      coverImageUrl: "../test/fixtures/test-image.png",
+    });
+    const savedCategory = await category.save();
+    categoryId = savedCategory._id.toString();
+
     const content = new Content({
       title: "Initial Content",
       type: "text",
       text: "Some initial text content",
       theme: themeId,
+      category: categoryId,
       user: user._id,
     });
     const savedContent = await content.save();
@@ -122,6 +131,7 @@ describe("ContentController - CRUD Operations", () => {
         type: "text",
         text: "Some new text content",
         theme: themeId,
+        category: categoryId,
       });
 
     expect(response.status).toBe(200);
@@ -137,6 +147,7 @@ describe("ContentController - CRUD Operations", () => {
         type: "text",
         text: "Some updated text content",
         theme: themeId,
+        category: categoryId,
       });
 
     expect(response.status).toBe(200);
@@ -173,6 +184,7 @@ describe("ContentController - CRUD Operations", () => {
         type: "text",
         text: "Some new text content",
         theme: "invalidThemeId",
+        category: categoryId,
       });
 
     expect(response.status).toBe(400);
@@ -188,6 +200,7 @@ describe("ContentController - CRUD Operations", () => {
         type: "text",
         text: "Some new text content",
         theme: themeId,
+        category: categoryId,
       });
 
     expect(response.status).toBe(400);
@@ -203,6 +216,7 @@ describe("ContentController - CRUD Operations", () => {
         type: "text",
         text: "Some updated text content",
         theme: themeId,
+        category: categoryId,
       });
 
     expect(response.status).toBe(400);
